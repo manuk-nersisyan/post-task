@@ -27,3 +27,10 @@ Route::group(['middleware' => 'auth', 'prefix' => 'post'], function () {
     Route::put('/update/{id}', 'PostController@update')->name('update-post');
     Route::delete('/delete/{id}', 'PostController@destroy')->name('delete-post');
 });
+Route::group(['middleware' => 'auth', 'prefix' => 'comment'], function () {
+    Route::get('create/{post_id}', 'CommentController@create')->name('create-comment');
+    Route::post('save', 'CommentController@store')->name('save-comment');
+    Route::get('/edit/{id}', 'CommentController@edit')->name('edit-comment');
+    Route::put('/update/{id}', 'CommentController@update')->name('update-comment');
+    Route::delete('/delete/{id}', 'CommentController@destroy')->name('delete-comment');
+});

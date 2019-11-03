@@ -6,7 +6,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        Show Post
+                        Post
                         <div class="float-right">
                             @if($post->user_id == Auth::id())
                                 <div class="btn-group">
@@ -17,7 +17,7 @@
                                 </div>
                             @endif
                             <div class="btn-group">
-                                <a href="#" class="btn btn-primary" role="button" aria-pressed="true">Create comment</a>
+                                <a href="{{route('create-comment',['post_id'=>$post->id])}}" class="btn btn-primary" role="button" aria-pressed="true">Create comment</a>
                             </div>
                         </div>
                     </div>
@@ -30,6 +30,34 @@
                                <p>{{$post->text}}</p>
                          </div>
                     </div>
+                    @if($comments->count() != 0)
+                    <hr>
+                    <div class="col-md-12">
+                    <h1 class="text-center">Comments</h1>
+                        @foreach($comments as $comment)
+                        <div class="card-deck">
+                            <div class="card bg-success">
+                                <div class="card-body">
+                                    <h6>{{ucfirst($comment->user->name)." ".ucfirst($comment->user->surname)}}</h6>
+                                    <p class="card-text">{{$comment->text}}</p>
+                                    @if($comment->user_id == Auth::id())
+                                        <div class="float-right">
+                                            <div class="btn-group">
+                                                <a href="{{route('edit-comment',['id'=>$comment->id])}}" class="btn btn-primary" role="button" aria-pressed="true" >Edit</a>
+                                            </div>
+                                            <div class="btn-group ">
+                                                @include('__forms.delete-comment-form')
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        @endforeach
+                        {{ $comments->links() }}
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

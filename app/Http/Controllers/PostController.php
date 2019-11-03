@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostRequest;
 use App\Post;
-use App\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -32,7 +30,6 @@ class PostController extends Controller
         return view('post.create');
     }
 
-
     /**
      * @param PostRequest $request
      * @return \Illuminate\Http\RedirectResponse
@@ -40,7 +37,6 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
         $name = "";
-
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $name = 'images/'.time() . '.' . ($image->getClientOriginalName());
@@ -52,7 +48,6 @@ class PostController extends Controller
                       "image"=> ($name !== "") ? $name : null,
                       'user_id' => Auth::id()
                  ]);
-
         return redirect()->route('home');
     }
 
@@ -62,10 +57,15 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show($id)
     {
-        $post = Post::findOrFail($id);
-        return view('post.post', compact('post'));
+//        $post = Post::with(['comments' => function ($query) {
+//                             $query->orderBy('created_at','DESC')->paginate(2);
+//                        }])->findOrFail($id);
+
+        $post = Post::query()->find($id);
+        $comments = $post->comments()->with(['user'])->orderBy('created_at','DESC')->paginate(3);
+        return view('post.post', compact('post', 'comments'));
     }
 
     /**
@@ -91,7 +91,6 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
         $image_path = $post->image;
-
         if ($post->user_id == Auth::id()){
             if ($request->hasFile('image')) {
                 if(\File::exists(public_path($image_path))) {
@@ -102,7 +101,6 @@ class PostController extends Controller
                 $destinationPath = public_path('/images');
                 $image->move($destinationPath, $image_path);
             }
-
             $post->update(['title'=> $request->get('title'),
                             'text'=> $request->get('text'),
                             "image"=> $image_path,
@@ -120,7 +118,6 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
-
         if ($post->user_id == Auth::id()){
             if ($post->image != null){
                 if(\File::exists(public_path($post->image))) {

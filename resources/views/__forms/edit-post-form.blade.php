@@ -43,6 +43,9 @@
                 <strong>{{ $message }}</strong>
             </span>
             @enderror
+            @if($post->image != "")
+                <img src="{{asset($post->image)}}" class="img-thumbnail float-right" width="330"  alt="Cinque Terre"  />
+            @endif
         </div>
     </div>
 
